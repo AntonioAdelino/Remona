@@ -1,21 +1,33 @@
-import 'dart:convert';
-import 'dart:io';
-import 'dart:math';
 import 'package:get/get.dart';
-import 'package:path/path.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeViewModel extends GetxController {
-  RxString word = 'teste'.obs;
-// /Users/antonioneto/AntonioPessoal/PhotoLetter/photoletter/lib/assets/data.json
-// /Users/antonioneto/AntonioPessoal/PhotoLetter/photoletter/lib/home/home_view_model.dart
-  Future<void> getNewWord() async {
-    
+  late SharedPreferences _sharedPreferences;
+  RxMap<String, String> host = RxMap();
 
-    String jsonContent = File('../../lib/assets/data.json').readAsStringSync();
-    Map<String, dynamic> data = jsonDecode(jsonContent);
-    List<String> words = List<String>.from(data['words']);
+  HomeViewModel() {
+    _startStoreController();
+  }
 
-    final random = Random();
-    word.value = words[random.nextInt(words.length)];
+  _startStoreController() async {
+    await _startSharedPreferences();
+    _readHost();
+  }
+
+  Future<void> _startSharedPreferences() async {
+    _sharedPreferences = await SharedPreferences.getInstance();
+  }
+
+  void _readHost() {
+    final name = _sharedPreferences.getString('name') ?? '';
+    final url = _sharedPreferences.getString('url') ?? '';
+    host['name'] = name;
+    host['url'] = url;
+  }
+
+  Future<void> saveHost(String name, String url) async {
+    await _sharedPreferences.setString('name', name);
+    await _sharedPreferences.setString('url', url);
+    _readHost();
   }
 }
