@@ -49,10 +49,13 @@ class HomeView extends StatelessWidget {
                         children: [
                           Row(
                             children: [
-                              Text(
-                                'host',
-                                style:
-                                    Theme.of(context).textTheme.headlineMedium,
+                              Obx(
+                                () => Text(
+                                  homeViewModel.host['name'] ?? '',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineMedium,
+                                ),
                               ),
                             ],
                           ),
@@ -61,23 +64,32 @@ class HomeView extends StatelessWidget {
                           ),
                           Row(
                             children: [
-                              Text(
-                                'google.com',
-                                style: Theme.of(context).textTheme.bodyMedium,
+                              Obx(
+                                () => Text(
+                                  homeViewModel.host['url'] ?? '',
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                ),
                               ),
                             ],
                           ),
                           const SizedBox(
                             height: 8,
                           ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              ElevatedButton(
-                                onPressed: () => _showDialog(context: context),
-                                child: const Text('Configure'),
-                              ),
-                            ],
+                          Obx(
+                            () => Row(
+                              mainAxisAlignment: homeViewModel.host['url'] == ''
+                                  ? MainAxisAlignment.center
+                                  : MainAxisAlignment.end,
+                              children: [
+                                ElevatedButton(
+                                  onPressed: () =>
+                                      _showDialog(context: context),
+                                  child: homeViewModel.host['url'] == ''
+                                      ? const Text('Add host')
+                                      : const Text('Configure'),
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
@@ -101,10 +113,10 @@ class HomeView extends StatelessWidget {
   }
 
   Future<void> _showDialog({required BuildContext context}) async {
-    final TextEditingController controller1 =
-        TextEditingController(text: 'host');
-    final TextEditingController controller2 =
-        TextEditingController(text: 'google.com');
+    final TextEditingController nameController =
+        TextEditingController(text: homeViewModel.host['name'] ?? '');
+    final TextEditingController urlController =
+        TextEditingController(text: homeViewModel.host['url'] ?? '');
     await showDialog(
       context: context,
       barrierDismissible: false,
@@ -119,12 +131,12 @@ class HomeView extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               TextField(
-                controller: controller1,
+                controller: nameController,
                 decoration: const InputDecoration(labelText: 'Name'),
               ),
               const SizedBox(height: 16),
               TextField(
-                controller: controller2,
+                controller: urlController,
                 decoration: const InputDecoration(labelText: 'URL'),
               ),
             ],
@@ -137,8 +149,12 @@ class HomeView extends StatelessWidget {
               child: const Text('Cancel'),
             ),
             TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
+              onPressed: () async {
+                await homeViewModel
+                    .saveHost(nameController.text, urlController.text)
+                    .then(
+                      (value) => Navigator.of(context).pop(),
+                    );
               },
               child: const Text('Save'),
             ),
