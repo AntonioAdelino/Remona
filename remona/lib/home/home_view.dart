@@ -51,7 +51,8 @@ class HomeView extends StatelessWidget {
                             children: [
                               Obx(
                                 () => Text(
-                                  homeViewModel.host['name'] ?? '',
+                                  homeViewModel.homeModel.value.host['name'] ??
+                                      '',
                                   style: Theme.of(context)
                                       .textTheme
                                       .headlineMedium,
@@ -66,7 +67,8 @@ class HomeView extends StatelessWidget {
                             children: [
                               Obx(
                                 () => Text(
-                                  homeViewModel.host['url'] ?? '',
+                                  homeViewModel.homeModel.value.host['url'] ??
+                                      '',
                                   style: Theme.of(context).textTheme.bodyMedium,
                                 ),
                               ),
@@ -77,14 +79,18 @@ class HomeView extends StatelessWidget {
                           ),
                           Obx(
                             () => Row(
-                              mainAxisAlignment: homeViewModel.host['url'] == ''
-                                  ? MainAxisAlignment.center
-                                  : MainAxisAlignment.end,
+                              mainAxisAlignment:
+                                  homeViewModel.homeModel.value.host['url'] ==
+                                          ''
+                                      ? MainAxisAlignment.center
+                                      : MainAxisAlignment.end,
                               children: [
                                 ElevatedButton(
                                   onPressed: () =>
                                       _showDialog(context: context),
-                                  child: homeViewModel.host['url'] == ''
+                                  child: homeViewModel
+                                              .homeModel.value.host['url'] ==
+                                          ''
                                       ? const Text('Add host')
                                       : const Text('Configure'),
                                 ),
@@ -113,10 +119,10 @@ class HomeView extends StatelessWidget {
   }
 
   Future<void> _showDialog({required BuildContext context}) async {
-    final TextEditingController nameController =
-        TextEditingController(text: homeViewModel.host['name'] ?? '');
-    final TextEditingController urlController =
-        TextEditingController(text: homeViewModel.host['url'] ?? '');
+    final TextEditingController nameController = TextEditingController(
+        text: homeViewModel.homeModel.value.host['name'] ?? '');
+    final TextEditingController urlController = TextEditingController(
+        text: homeViewModel.homeModel.value.host['url'] ?? '');
     await showDialog(
       context: context,
       barrierDismissible: false,
