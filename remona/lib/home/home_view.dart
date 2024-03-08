@@ -109,7 +109,9 @@ class HomeView extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async => {
-          await homeViewModel.fetchData(),
+          // await homeViewModel.fetchData(),
+          // await homeViewModel.getGaleryContentPath(),
+          await homeViewModel.uploadGalleryFiles(),
         },
         tooltip: 'Increment',
         child: const Icon(
